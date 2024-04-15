@@ -4,7 +4,7 @@
   const status = data.props.success;
 
   onMount(() => {
-    console.log(data);
+    console.log('changed', data);
   })
 
 </script>
