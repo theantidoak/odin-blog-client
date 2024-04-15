@@ -3,7 +3,6 @@ import cookie from 'cookie';
 import _ from 'lodash';
 
 export function getJWTCookie(jwtCookie: string, status: number) {
-  console.log(jwtCookie);
   const jwtCookieName = 'ob_secure_auth';
   if (!jwtCookie || !jwtCookie.includes(jwtCookieName)) {
     throw new Error(`No Cookie: ${status}`);
