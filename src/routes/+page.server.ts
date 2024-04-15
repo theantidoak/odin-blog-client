@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import { getJWTCookie } from '$lib';
 
 dotenv.config();
 
@@ -18,11 +17,8 @@ export const load = async ({fetch, cookies}) => {
       })
     });
 
-    const headerCookie = postResponse.headers.get('Set-Cookie') ?? 'undefined';
-    const { jwtCookieName, jwtCookieOptions } = getJWTCookie(headerCookie, postResponse.status);
-    cookies.set(jwtCookieName, jwtCookieOptions[jwtCookieName], jwtCookieOptions);
-
-    const jwtCookie = cookies.get('ob_secure_auth');
+    const jwtCookieName = 'ob_secure_auth';
+    const jwtCookie = cookies.get(jwtCookieName);
 
     const getResponse = await fetch(`${process.env.APIENDPOINT}/api/posts`, {
       method: 'GET',
@@ -40,6 +36,10 @@ export const load = async ({fetch, cookies}) => {
 
     const getJson = await getResponse.json();
     const postJson = await postResponse.json();
+
+    const { cookie: jwtCookieOptions } = postJson;
+    jwtCookieOptions.expires = new Date(jwtCookieOptions.expires);
+    cookies.set(jwtCookieName, jwtCookieOptions[jwtCookieName], jwtCookieOptions);
 
     const data = Object.assign({}, { post: postJson }, { get: getJson } );
     return { props: { ...data } };
