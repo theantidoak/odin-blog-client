@@ -9,8 +9,8 @@ export const load = async ({fetch, cookies}) => {
   // eslint-disable-next-line prefer-const
   let method = 'GET';
   try {
-    const postResponse = fetch(`${process.env.APIENDPOINT}/api/${api}`, {
-      method: method,
+    const postResponse = fetch(`${process.env.APIENDPOINT}/api/login`, {
+      method: 'POST',
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
@@ -22,6 +22,10 @@ export const load = async ({fetch, cookies}) => {
       })
     });
 
+    const response = await postResponse
+    const { jwtCookieName, jwtCookieOptions } = getJWTCookie(response);
+    cookies.set(jwtCookieName, jwtCookieOptions[jwtCookieName], jwtCookieOptions);
+
     const getResponse = fetch(`${process.env.APIENDPOINT}/api/${api}`, {
       method: method,
       credentials: 'include',
@@ -31,19 +35,15 @@ export const load = async ({fetch, cookies}) => {
       },
     });
 
-    const response = method === 'POST' ? await postResponse : await getResponse;
+    const verifyResponse = await getResponse;
 
-    if (!response.ok) {
+    if (!response.ok || !verifyResponse.ok) {
       throw new Error(`Failed to fetch: ${response.status}`);
     }
 
-    if (api === 'login') {
-      const { jwtCookieName, jwtCookieOptions } = getJWTCookie(response);
-      cookies.set(jwtCookieName, jwtCookieOptions[jwtCookieName], jwtCookieOptions);
-    }
-
     const data = await response.json();
-    return { props: { ...data } };
+    const verifyData = await verifyResponse.json();
+    return { props: { ...data, ...verifyData } };
   } catch (err) {
     console.error(err);
     return { props: { success: false }, err: (err as { message: string }).message };
