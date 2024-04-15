@@ -20,6 +20,7 @@ export const load = async ({fetch, cookies}) => {
 
     const response = await postResponse
     const { jwtCookieName, jwtCookieOptions } = getJWTCookie(response);
+    console.log(jwtCookieName, jwtCookieOptions);
     cookies.set(jwtCookieName, jwtCookieOptions[jwtCookieName], jwtCookieOptions);
 
     // const getResponse = fetch(`${process.env.APIENDPOINT}/api/${api}`, {
