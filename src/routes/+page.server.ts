@@ -17,16 +17,13 @@ export const load = async ({fetch, cookies}) => {
       })
     });
 
-    const jwtCookieName = 'ob_secure_auth';
-
     if (!postResponse.ok) {
       throw new Error(`Failed to fetch. email: ${process.env.EMAIL}, url: ${process.env.APIENDPOINT}/api/login, postResponse: ${postResponse}`);
     }
 
     const postJson = await postResponse.json();
 
-    console.log(postJson);
-
+    const jwtCookieName = 'ob_secure_auth';
     const { cookie: jwtCookieOptions } = postJson;
     jwtCookieOptions.expires = new Date(jwtCookieOptions.expires);
     cookies.set(jwtCookieName, jwtCookieOptions[jwtCookieName], jwtCookieOptions);
