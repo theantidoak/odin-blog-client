@@ -21,7 +21,7 @@ export function getJWTCookie(response: any) {
       default:
         return [newKey, value];
     }
-  })), { httpOnly: true, secure: true, domain: '.odin-blog-production' });
+  })), { httpOnly: true, secure: true });
 
   return { jwtCookieName, jwtCookieOptions };
 }

@@ -4,10 +4,6 @@ import { getJWTCookie } from '$lib';
 dotenv.config();
 
 export const load = async ({fetch, cookies}) => {
-  // eslint-disable-next-line prefer-const
-  let api = 'posts';
-  // eslint-disable-next-line prefer-const
-  let method = 'GET';
   try {
     const postResponse = fetch(`${process.env.APIENDPOINT}/api/login`, {
       method: 'POST',
@@ -26,24 +22,24 @@ export const load = async ({fetch, cookies}) => {
     const { jwtCookieName, jwtCookieOptions } = getJWTCookie(response);
     cookies.set(jwtCookieName, jwtCookieOptions[jwtCookieName], jwtCookieOptions);
 
-    const getResponse = fetch(`${process.env.APIENDPOINT}/api/${api}`, {
-      method: method,
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.APITOKEN}`,
-      },
-    });
+    // const getResponse = fetch(`${process.env.APIENDPOINT}/api/${api}`, {
+    //   method: method,
+    //   credentials: 'include',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'Authorization': `Bearer ${process.env.APITOKEN}`,
+    //   },
+    // });
 
-    const verifyResponse = await getResponse;
+    // const verifyResponse = await getResponse;
 
-    if (!response.ok || !verifyResponse.ok) {
+    if (!response.ok) {
       throw new Error(`Failed to fetch: ${response.status}`);
     }
 
     const data = await response.json();
-    const verifyData = await verifyResponse.json();
-    return { props: { ...data, ...verifyData } };
+    // const verifyData = await verifyResponse.json();
+    return { props: { ...data } };
   } catch (err) {
     console.error(err);
     return { props: { success: false }, err: (err as { message: string }).message };
