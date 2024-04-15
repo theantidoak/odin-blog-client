@@ -22,7 +22,7 @@ export const load = async ({fetch, cookies}) => {
       })
     });
 
-    const getResponse = fetch(`${process.env.APIENDPOINT}/api/${api}`, {
+    const getResponse = fetch(`http://localhost:3000/api/${api}`, {
       method: method,
       credentials: 'include',
       headers: {
