@@ -5,12 +5,12 @@ dotenv.config();
 
 export const load = async ({fetch, cookies}) => {
   try {
-    const postResponse = fetch(`${process.env.APIENDPOINT}/api/login`, {
+    const postResponse = await fetch(`${process.env.APIENDPOINT}/api/login`, {
       method: 'POST',
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.APITOKEN}`,
+        'APIToken': `Token ${process.env.APITOKEN}`
       },
       body: JSON.stringify({
         email: process.env.EMAIL,
@@ -18,28 +18,29 @@ export const load = async ({fetch, cookies}) => {
       })
     });
 
-    const response = await postResponse
-    const { jwtCookieName, jwtCookieOptions } = getJWTCookie(response);
-    console.log(jwtCookieName, jwtCookieOptions);
+    const { jwtCookieName, jwtCookieOptions } = getJWTCookie(postResponse);
     cookies.set(jwtCookieName, jwtCookieOptions[jwtCookieName], jwtCookieOptions);
 
-    // const getResponse = fetch(`${process.env.APIENDPOINT}/api/${api}`, {
-    //   method: method,
-    //   credentials: 'include',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': `Bearer ${process.env.APITOKEN}`,
-    //   },
-    // });
+    const jwtCookie = cookies.get('ob_secure_auth');
 
-    // const verifyResponse = await getResponse;
+    const getResponse = await fetch(`${process.env.APIENDPOINT}/api/posts`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'APIToken': `Token ${process.env.APITOKEN}`,
+        'Authorization': `Bearer ${jwtCookie}`
+      },
+    });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch: ${response.status}`);
+    if (!postResponse.ok || !getResponse.ok) {
+      throw new Error(`Failed to fetch: post: ${postResponse.status} get: ${getResponse.status}`);
     }
 
-    const data = await response.json();
-    // const verifyData = await verifyResponse.json();
+    const getJson = await getResponse.json();
+    const postJson = await postResponse.json();
+
+    const data = Object.assign({}, { post: postJson }, { get: getJson } );
     return { props: { ...data } };
   } catch (err) {
     console.error(err);
