@@ -1,33 +1,25 @@
 // place files you want to import through the `$lib` alias in this folder.
+import cookie from 'cookie';
+import _ from 'lodash';
 
-function getHeaders(APITOKEN: unknown) {
-  return {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${APITOKEN}`
-    },
+export function getJWTCookie(response: any) {
+  const jwtCookie = response.headers.get('Set-Cookie');
+  const jwtCookieName = 'ob_secure_auth';
+  if (!jwtCookie || !jwtCookie.includes(jwtCookieName)) {
+    throw new Error(`No Cookie: ${response.status}`);
   }
-}
 
-function postHeaders(APITOKEN: unknown) {
-  return {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${APITOKEN}`
-    },
-  }
-}
+  const parsedJWTCookie = cookie.parse(jwtCookie);
+  
+  const jwtCookieOptions = Object.assign({}, Object.fromEntries(Object.entries(parsedJWTCookie).map(([key, value]) => {
+    const newKey = _.camelCase(key);
+    switch (newKey) {
+      case 'expires':
+        return [newKey, new Date(value)];
+      default:
+        return [newKey, value];
+    }
+  })), { httpOnly: true, secure: true });
 
-function putHeaders(APITOKEN: unknown) {
-  return {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${APITOKEN}`
-    },
-  }
+  return { jwtCookieName, jwtCookieOptions };
 }
-
-export { getHeaders, postHeaders, putHeaders };
