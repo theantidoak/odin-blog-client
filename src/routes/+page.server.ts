@@ -18,7 +18,8 @@ export const load = async ({fetch, cookies}) => {
       })
     });
 
-    const { jwtCookieName, jwtCookieOptions } = getJWTCookie(postResponse);
+    const headerCookie = postResponse.headers.get('Set-Cookie') ?? 'undefined';
+    const { jwtCookieName, jwtCookieOptions } = getJWTCookie(headerCookie, postResponse.status);
     cookies.set(jwtCookieName, jwtCookieOptions[jwtCookieName], jwtCookieOptions);
 
     const jwtCookie = cookies.get('ob_secure_auth');

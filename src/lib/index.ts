@@ -2,11 +2,10 @@
 import cookie from 'cookie';
 import _ from 'lodash';
 
-export function getJWTCookie(response: any) {
-  const jwtCookie = response.headers.get('Set-Cookie');
+export function getJWTCookie(jwtCookie: string, status: number) {
   const jwtCookieName = 'ob_secure_auth';
   if (!jwtCookie || !jwtCookie.includes(jwtCookieName)) {
-    throw new Error(`No Cookie: ${response.status}`);
+    throw new Error(`No Cookie: ${status}`);
   }
 
   const parsedJWTCookie = cookie.parse(jwtCookie);
