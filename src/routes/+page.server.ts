@@ -4,8 +4,10 @@ import { getJWTCookie } from '$lib';
 dotenv.config();
 
 export const load = async ({fetch, cookies}) => {
-  const api = 'login';
-  const method = 'POST';
+  // eslint-disable-next-line prefer-const
+  let api = 'posts';
+  // eslint-disable-next-line prefer-const
+  let method = 'GET';
   try {
     const postResponse = fetch(`${process.env.APIENDPOINT}/api/${api}`, {
       method: method,

@@ -21,7 +21,7 @@ export function getJWTCookie(response: any) {
       default:
         return [newKey, value];
     }
-  })), { httpOnly: false, secure: true });
+  })), { httpOnly: true, secure: true });
 
   return { jwtCookieName, jwtCookieOptions };
 }
