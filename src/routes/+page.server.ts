@@ -4,10 +4,11 @@ import { getJWTCookie } from '$lib';
 dotenv.config();
 
 export const load = async ({fetch, cookies}) => {
-  const loginURL = `${process.env.APIENDPOINT}/api/login`;
+  const api = 'login';
+  const method = 'POST';
   try {
-    const response = await fetch(loginURL, {
-      method: 'POST',
+    const postResponse = fetch(`${process.env.APIENDPOINT}/api/${api}`, {
+      method: method,
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
@@ -19,12 +20,25 @@ export const load = async ({fetch, cookies}) => {
       })
     });
 
+    const getResponse = fetch(`${process.env.APIENDPOINT}/api/${api}`, {
+      method: method,
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.APITOKEN}`,
+      },
+    });
+
+    const response = method === 'POST' ? await postResponse : await getResponse;
+
     if (!response.ok) {
       throw new Error(`Failed to fetch: ${response.status}`);
     }
 
-    const { jwtCookieName, jwtCookieOptions } = getJWTCookie(response);
-    cookies.set(jwtCookieName, jwtCookieOptions[jwtCookieName], jwtCookieOptions);
+    if (api === 'login') {
+      const { jwtCookieName, jwtCookieOptions } = getJWTCookie(response);
+      cookies.set(jwtCookieName, jwtCookieOptions[jwtCookieName], jwtCookieOptions);
+    }
 
     const data = await response.json();
     return { props: { ...data } };

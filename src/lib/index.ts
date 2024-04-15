@@ -13,13 +13,15 @@ export function getJWTCookie(response: any) {
   
   const jwtCookieOptions = Object.assign({}, Object.fromEntries(Object.entries(parsedJWTCookie).map(([key, value]) => {
     const newKey = _.camelCase(key);
-    switch (newKey) {
-      case 'expires':
+    switch (key) {
+      case 'ob_secure_auth':
+        return [key, value];
+      case 'Expires':
         return [newKey, new Date(value)];
       default:
         return [newKey, value];
     }
-  })), { httpOnly: true, secure: true });
+  })), { httpOnly: false, secure: true });
 
   return { jwtCookieName, jwtCookieOptions };
 }
