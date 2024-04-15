@@ -20,7 +20,7 @@ export const load = async ({fetch, cookies}) => {
     const jwtCookieName = 'ob_secure_auth';
 
     if (!postResponse.ok) {
-      throw new Error(`Failed to fetch: post: ${postResponse.status}`);
+      throw new Error(`Failed to fetch: post: ${process.env.EMAIL}`);
     }
 
     const postJson = await postResponse.json();
