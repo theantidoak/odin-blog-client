@@ -18,7 +18,7 @@ export const load = async ({fetch, cookies}) => {
     });
 
     if (!postResponse.ok) {
-      throw new Error(`Failed to fetch. email: ${process.env.EMAIL}, url: ${process.env.APIENDPOINT}/api/login, postResponse: ${postResponse}`);
+      throw new Error(`Failed to fetch. post: ${postResponse.status}`);
     }
 
     const postJson = await postResponse.json();
