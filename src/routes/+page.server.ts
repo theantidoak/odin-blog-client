@@ -1,55 +1,41 @@
+import { error } from '@sveltejs/kit';
+import { POST } from './api/login/+server.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
+async function handlePosts(fetch: any, jwtCookie: string) {
+  const getResponse = await fetch(`${process.env.APIENDPOINT}/api/posts`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      'APIToken': `Token ${process.env.APITOKEN}`,
+      'Authorization': `Bearer ${jwtCookie}`
+    },
+  });
+
+  if (!getResponse.ok) {
+    error(getResponse.status, `${getResponse.statusText} Failed to fetch posts`);
+  }
+
+  return await getResponse.json();
+}
+
 export const load = async ({fetch, cookies}) => {
   try {
-    const postResponse = await fetch(`${process.env.APIENDPOINT}/api/login`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'APIToken': `Token ${process.env.APITOKEN}`
-      },
-      body: JSON.stringify({
-        email: process.env.EMAIL,
-        password: process.env.PASSWORD
-      })
-    });
-
-    if (!postResponse.ok) {
-      throw new Error(`Failed to fetch. post: ${postResponse.status}`);
-    }
-
-    const postJson = await postResponse.json();
-
     const jwtCookieName = 'ob_secure_auth';
-    const { cookie: jwtCookieOptions } = postJson;
-    jwtCookieOptions.expires = new Date(jwtCookieOptions.expires);
-    cookies.set(jwtCookieName, jwtCookieOptions[jwtCookieName], jwtCookieOptions);
-
     const jwtCookie = cookies.get(jwtCookieName);
 
-    const getResponse = await fetch(`${process.env.APIENDPOINT}/api/posts`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'APIToken': `Token ${process.env.APITOKEN}`,
-        'Authorization': `Bearer ${jwtCookie}`
-      },
-    });
-
-    if (!getResponse.ok) {
-      throw new Error(`Failed to fetch: post: ${getResponse.status}`);
+    if (!jwtCookie) {
+      error(400, `Failed to get cookie`);
     }
 
-    const getJson = await getResponse.json();
-
-    const data = Object.assign({}, { post: postJson }, { get: getJson } );
-    return { props: { ...data } };
+    const postsData = await handlePosts(fetch, jwtCookie);
+    return { ...postsData };
+    
   } catch (err) {
     console.error(err);
-    return { props: { success: false }, err: (err as { message: string }).message };
+    throw err;
   }
 }

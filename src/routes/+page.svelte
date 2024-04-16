@@ -1,16 +1,19 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  export let data;
-  const status = data.props.success;
+  import { page } from '$app/stores';
+  import LoginForm from './login-form.svelte';
+  const { data } = $page;
 
   onMount(() => {
-    console.log('changed', data);
-  })
+    console.log('page: ', $page);
+    console.log('data: ', data);
+  });
 
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<main>
+  <LoginForm />
+</main>
 
 <style lang="scss">
 
