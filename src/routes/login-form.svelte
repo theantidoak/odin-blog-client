@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { isLoggedIn } from "../stores/auth";
+
 
   async function submitForm(e: Event) {
     e.preventDefault();
@@ -14,6 +16,9 @@
       },
       body: JSON.stringify(jsonData)
     });
+
+    isLoggedIn.set(response.status === 200 ? true : false);
+
   }
 </script>
 

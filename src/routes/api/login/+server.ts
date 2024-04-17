@@ -4,7 +4,6 @@ import { json } from "@sveltejs/kit";
 dotenv.config();
 
 export async function POST(event: any) {
-  const isLocalAPI = event ? true : false;
   const reqBody = await event.request.json();
   const body = typeof reqBody === 'string' ? reqBody : JSON.stringify(reqBody);
 
@@ -19,18 +18,15 @@ export async function POST(event: any) {
   });
 
   if (!postResponse.ok) {
-    error(postResponse.status, `${postResponse.statusText}. Failed to login.`);
+    error(postResponse.status, `${postResponse.statusText}. Failed to reach the API.`);
   }
 
   const postJson = await postResponse.json();
-  const { cookie: jwtCookieOptions } = postJson;
+  const { success, cookie: jwtCookieOptions } = postJson;
+  const cookies = event.cookies;
+  const jwtCookieName = 'ob_secure_auth';
+  jwtCookieOptions.expires = new Date(jwtCookieOptions.expires);
+  cookies.set(jwtCookieName, jwtCookieOptions[jwtCookieName], jwtCookieOptions);
 
-  if (isLocalAPI) {
-    const cookies = event.cookies;
-    const jwtCookieName = 'ob_secure_auth';
-    jwtCookieOptions.expires = new Date(jwtCookieOptions.expires);
-    cookies.set(jwtCookieName, jwtCookieOptions[jwtCookieName], jwtCookieOptions);
-  }
-
-  return json({ status: 201 });
+  return json({ success, status: 201 });
 }
