@@ -7,7 +7,7 @@ export async function POST(event: any) {
   const reqBody = await event.request.json();
   const body = typeof reqBody === 'string' ? reqBody : JSON.stringify(reqBody);
 
-  const postResponse = await fetch(`${process.env.APIENDPOINT}/api/login`, {
+  const postResponse = await fetch(`${process.env.APIENDPOINT}/api/comments`, {
     method: 'POST',
     credentials: 'include',
     headers: {
@@ -22,11 +22,7 @@ export async function POST(event: any) {
   }
 
   const postData = await postResponse.json();
-  const { success, cookie: jwtCookieOptions } = postData;
-  const cookies = event.cookies;
-  const jwtCookieName = 'ob_secure_auth';
-  jwtCookieOptions.expires = new Date(jwtCookieOptions.expires);
-  cookies.set(jwtCookieName, jwtCookieOptions[jwtCookieName], jwtCookieOptions);
+  const { success, message, result: comment } = postData;
 
-  return json({ success, status: 201 });
+  return json({ success, status: 201, comment });
 }

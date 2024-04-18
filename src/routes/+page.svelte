@@ -1,10 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
-  import LoginForm from './login-form.svelte';
-  import { isLoggedIn } from '../stores/auth';
+  import { posts } from '../stores/auth';
   const { body, success } = $page.data;
-  isLoggedIn.set(success);
+  posts.set(body.posts ? body.posts : $posts);
 
   onMount(() => {
     console.log('page: ', $page);
@@ -14,15 +13,13 @@
 </script>
 
 <main id="main" class="home">
-  {#if !$isLoggedIn} 
-    <LoginForm />
-  {:else if body.posts}
+  {#if $posts}
     <h1 class="home__heading">Blog</h1>
     <ul class="home__posts">
-      {#each body.posts as post}
+      {#each $posts as post}
         <li class="home__post">
           <a class="home__post-link" href="/{post.slug}">
-            {#if post.img !== ''}
+            {#if post.image !== ''}
               <img src="{post.img}" alt="" />
             {/if}
             <div class="home__post-description">
@@ -38,37 +35,7 @@
 
 <style lang="scss">
 
-  :global(body) {
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    width: 100vw;
-  }
-
-  :global(*) {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  :global(main) {
-    padding-top: 4rem;
-  }
-
   .home {
-    height: calc(100vh);
-
-    > * {
-      display: block;
-      width: 100%;
-      margin-left: auto;
-      margin-right: auto;
-      padding: 0 5vw;
-
-      @media (min-width: 1024px) {
-        padding: 0 4rem;
-      }
-    }
 
     &__posts {
       list-style: none;

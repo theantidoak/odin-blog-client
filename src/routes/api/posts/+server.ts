@@ -16,17 +16,12 @@ function getImageSrc(postContent: string) {
 }
 
 export async function GET(event:any) {
-  const cookies = event.cookies;
-  const jwtCookieName = 'ob_secure_auth';
-  const jwtCookie = cookies.get(jwtCookieName);
-
   const getResponse = await fetch(`${process.env.APIENDPOINT}/api/posts`, {
     method: 'GET',
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      'APIToken': `Token ${process.env.APITOKEN}`,
-      'Authorization': `Bearer ${jwtCookie}`
+      'APIToken': `Token ${process.env.APITOKEN}`
     },
   });
 
