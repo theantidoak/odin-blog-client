@@ -1,17 +1,14 @@
 import { error } from '@sveltejs/kit';
+import he from 'he';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const load = async ({fetch, params, cookies}) => {
+export const load = async ({fetch, params }) => {
   try {
-    const { postSlug } = params;
-    const authCall = fetch(`/api/auth`);
-    const postsCall = fetch(`/api/posts/${postSlug}`);
-    const [ authResponse, postsResponse ] = await Promise.all([ authCall, postsCall ]);
-    const [ authData, postsData ] = await Promise.all([ authResponse.json(), postsResponse.json()]);
+    const postsResponse = await fetch(`/api/posts/${params.postSlug}`);
+    const postsData = await postsResponse.json();
     const { targetPost: post, success } = postsData;
-    const { success: isAuthorized } = authData;
 
     if (!success) {
       error(401, 'Failed to get post from server');
@@ -25,7 +22,7 @@ export const load = async ({fetch, params, cookies}) => {
       error(401, 'Failed to get post comments from server');
     }
 
-    return { status: 200, success, body: { post, comments, isAuthorized } };   
+    return { status: 200, success, body: { post: {...post, content: he.decode(post.content) }, comments } };   
   } catch (err) {
     console.error(err);
     const errResponse: any = err;

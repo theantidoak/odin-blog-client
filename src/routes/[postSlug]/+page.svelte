@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import CommentForm from '../../components/comment-form.svelte';
   import { comments, showCommentForm } from '../../stores/auth';
 
-  const { body, success } = $page.data;
+  const { body } = $page.data;
   comments.set(body.comments);
 
   function handleLikeCounter(button: HTMLButtonElement, like: string) {
@@ -36,27 +35,6 @@
     }
   }
 
-  async function deleteComment(e: Event) {
-    const button = e.currentTarget as HTMLButtonElement;
-    const { id } = button.dataset;
-
-    const response = await fetch(`/api/comments/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (success) {
-      comments.set($comments.filter((comment) => comment._id !== id));
-    }
-  }
-
-  onMount(() => {
-    console.log('page: ', $page);
-    console.log('data: ', body);
-  });
-
 </script>
 
 <main id="main" class="post">
@@ -78,9 +56,6 @@
           <p class="comment__likes">{comment.likes}</p>
           <button type="button" on:click={addLike} data-id="{comment._id}" data-like="true">Like</button>
           <button type="button" on:click={addLike} data-id="{comment._id}" data-like="false">Unlike</button>
-          {#if body.isAuthorized}
-            <button type="button" on:click={deleteComment} data-id="{comment._id}">Delete</button>
-          {/if}
         </li>
       {/each}
     </ul>

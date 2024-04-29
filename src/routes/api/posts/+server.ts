@@ -1,6 +1,7 @@
 import { error } from "@sveltejs/kit";
 import dotenv from 'dotenv';
 import { json } from "@sveltejs/kit";
+import he from 'he';
 import * as cheerio from 'cheerio';
 dotenv.config();
 
@@ -38,8 +39,8 @@ export async function GET(event:any) {
 
   const recentPosts = posts ? posts.map((post: any) => ({
     ...post,
-    image: getImageSrc(post.content),
-    excerpt: getExcerpt(post.content),
+    image: getImageSrc(he.decode(post.content)),
+    excerpt: getExcerpt(he.decode(post.content)),
   })) : [];
 
   return json({ success, status: getResponse.status, recentPosts });
