@@ -7,12 +7,13 @@ dotenv.config();
 export const load = async ({fetch}) => {
   try {
     const response = await fetch('/api/posts');
-    const postsData = await response.json()
-    const { recentPosts: posts, success } = postsData;
 
-    if (!success) {
+    if (!response.ok) {
       error(401, 'Failed to get posts from server');
     }
+    
+    const postsData = await response.json()
+    const { recentPosts: posts, success } = postsData;
 
     return { status: 200, success, body: { posts } };   
   } catch (err) {

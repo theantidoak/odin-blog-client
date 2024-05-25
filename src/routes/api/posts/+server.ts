@@ -7,7 +7,7 @@ dotenv.config();
 
 function getExcerpt(postContent: string) {
   if (!postContent) return '';
-  return postContent.replace(/(<([^>]+)>)/ig, '').slice(0, 40);
+  return postContent.replace(/(<([^>]+)>)/ig, '').slice(0, 150);
 }
 
 function getImageSrc(postContent: string) {

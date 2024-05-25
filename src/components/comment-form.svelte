@@ -36,15 +36,62 @@
   <form id="comment-form-id" action="" class="form" on:submit={submitComment}>
     <div class="form__field">
       <label for="author">Author: </label>
-      <input type="author" name="author" required />
+      <input type="author" name="author" id="author" required />
     </div>
     <div class="form__field">
       <label for="content">Comment: </label>
-      <input type="content" name="content" required />
+      <textarea name="content" id="content" rows="5" required ></textarea>
     </div>
     <input type="hidden" name="post" value="{postId}" />
-    <div class="form__field">
+    <div class="form__field buttons">
       <button class="form__submit-btn">Submit</button>
     </div>
   </form>
 </div>
+
+<style lang="scss">
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    width: fit-content;
+    margin: 1rem 0 0;
+    border: 1px solid #cfc8d8;
+    padding: 1rem;
+    width: clamp(286px, 85%, 500px);
+
+    &__field {
+      display: flex;
+      flex-direction: column;
+      gap: .25rem;
+
+      &.buttons {
+        width: fit-content;
+        margin: 1rem 0 .5rem;
+      }
+
+      label {
+        font-size: clamp(14px, 4.5vw, 16px);
+      }
+
+      input, textarea {
+        padding: .25rem 0;
+      }
+    }
+
+    &__submit-btn {
+      padding: .5rem 1rem;
+      cursor: pointer;
+      font-size: 16px;
+      color: white;
+      background-color: var(--light-blue);
+      border-radius: 10px;
+      border: none;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+
+      &:hover, &:active {
+        box-shadow: 0 3px 6px rgba(0, 0, 0, .3);
+      }
+    }
+  }
+</style>
