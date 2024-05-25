@@ -91,7 +91,7 @@
     }
 
     .comment-section {
-      margin: 2rem 0 0;
+      margin: 5rem 0 0;
 
       &__heading {
         text-align: left;
